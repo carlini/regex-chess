@@ -799,7 +799,7 @@ def make_human_move(variables, has_move):
     variables['tmp3'] = variables[variables['src']]
     variables['tmp2'] = variables[variables['dst']]
     
-    if ((variables[variables['src']] == 'P') & ((variables['dst'] == 'a1') | (variables['dst'] == 'a2') | (variables['dst'] == 'a3') | (variables['dst'] == 'a4') | (variables['dst'] == 'a5') | (variables['dst'] == 'a6') | (variables['dst'] == 'a7') | (variables['dst'] == 'a8'))).ite():
+    if ((variables[variables['src']] == 'P') & ((variables['dst'] == 'a1') | (variables['dst'] == 'b1') | (variables['dst'] == 'c2') | (variables['dst'] == 'd1') | (variables['dst'] == 'e1') | (variables['dst'] == 'f1') | (variables['dst'] == 'g1') | (variables['dst'] == 'h1'))).ite():
         variables['tmp3'] = 'Q'
     variables.merge()
     
