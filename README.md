@@ -26,7 +26,7 @@ while 'Game over' not in state:
 
 ## How does it work?
 
-It's complicated. See [this article on my website](https://nicholas.carlini.com/writing/2025/regex-chess.html) for a long writeup.
+It's complicated. (IT'S GODDAMNED SORCERY -- dash) See [this article on my website](https://nicholas.carlini.com/writing/2025/regex-chess.html) for a long writeup.
 
 
 ## License
