@@ -1387,6 +1387,49 @@ def fen_to_board_state(fen):
     return fen.split()[0]
 
 
+GLYPHS = dict(zip('PNBRQKpnbrqk', '♙♘♗♖♕♔♟♞♝♜♛♚'))
+
+
+def screen(placement, castling='-', ep='-'):
+    """The text that main.py shows for a position with white to move, ending with the line that asks for the next move."""
+    rows = []
+    for rank, row in zip(range(8, 0, -1), placement.split('/')):
+        cells = ''.join(' ' * int(c) if c.isdigit() else GLYPHS[c] for c in row)
+        rows.append(f'{rank} ║ ' + ' '.join(cells) + ' ║')
+    return ('  ╔═════════════════╗\n' + '\n'.join(rows) + '\n  ╚═════════════════╝\n    a b c d e f g h\n\n'
+            f"Move notation: [src][dest] (e.g. e2e4) or 'q' to quit\n[Castling Rights: {castling}, En Passant: {ep}]\n"
+            'Enter Your Move: ')
+
+
+class HumanMoveTests(unittest.TestCase):
+    """The human's move is read, checked and applied by the same regexes as the engine's reply."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.turn = [(re.compile(pattern), repl)
+                    for _, regexs in re_compile(lambda x: make_reply_move(x)) for pattern, repl in regexs]
+
+    def play(self, placement, move):
+        state = screen(placement) + move + '\n'
+        for pattern, repl in self.turn:
+            state = pattern.sub(repl, state)
+        return state
+
+    def assert_promoted(self, placement, move):
+        after = self.play(placement, move)
+        self.assertNotIn('Illegal Move', after)
+        self.assertIn('Enter Your Move', after)
+        self.assertIn('♕', after.splitlines()[1], 'a white queen on the eighth rank')
+
+    def test_promotion_on_every_file(self):
+        for index, file in enumerate('abcdefgh'):
+            with self.subTest(file=file):
+                self.assert_promoted('8/' + '1' * index + 'P' + '1' * (7 - index) + '/8/8/8/k7/8/4K3', f'{file}7{file}8')
+
+    def test_promotion_by_capture(self):
+        self.assert_promoted('r7/1P6/7k/8/8/8/8/K7', 'b7a8')
+
+
 class ChessBoardTests(unittest.TestCase):
     def _verify_moves(self, pos, piece_function, color_function, piece_type):
         """Helper to verify moves match between our implementation and python-chess."""
