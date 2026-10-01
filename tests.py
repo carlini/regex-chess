@@ -1429,6 +1429,35 @@ class HumanMoveTests(unittest.TestCase):
     def test_promotion_by_capture(self):
         self.assert_promoted('r7/1P6/7k/8/8/8/8/K7', 'b7a8')
 
+    def test_committed_program_accepts_the_a_file(self):
+        """a2a3 ended the game while regex-chess.json predated the source (issue #1)."""
+        import json
+        with open('regex-chess.json', encoding='utf-8') as stream:
+            program = [(re.compile(pattern), repl) for pattern, repl in json.load(stream)]
+        state = ''
+        for pattern, repl in program:
+            state = pattern.sub(repl, state)
+        state += 'a2a3\n'
+        for pattern, repl in program:
+            state = pattern.sub(repl, state)
+        self.assertNotIn('Illegal Move', state)
+        self.assertIn('Enter Your Move', state)
+
+    def test_committed_program_is_current(self):
+        """regex-chess.json is what write_regex_json.py generates from the source (set CHECK_COMMITTED_JSON=1)."""
+        import json
+        import os
+        import tempfile
+        if not os.environ.get('CHECK_COMMITTED_JSON'):
+            self.skipTest('set CHECK_COMMITTED_JSON=1 to compare regex-chess.json with the source; regenerate it after any generator change')
+        from write_regex_json import write_json_output
+        with tempfile.TemporaryDirectory() as directory:
+            generated = os.path.join(directory, 'regex-chess.json')
+            write_json_output(re_compile(lambda x: make_reply_move(x)), generated)
+            with open(generated, encoding='utf-8') as new, open('regex-chess.json', encoding='utf-8') as old:
+                self.assertTrue(json.load(new) == json.load(old),
+                                'regex-chess.json is out of date: run python write_regex_json.py regex-chess.json')
+
 
 class ChessBoardTests(unittest.TestCase):
     def _verify_moves(self, pos, piece_function, color_function, piece_type):
