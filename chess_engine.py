@@ -799,7 +799,8 @@ def make_human_move(variables, has_move):
     variables['tmp3'] = variables[variables['src']]
     variables['tmp2'] = variables[variables['dst']]
     
-    if ((variables[variables['src']] == 'P') & ((variables['dst'] == 'a1') | (variables['dst'] == 'b1') | (variables['dst'] == 'c2') | (variables['dst'] == 'd1') | (variables['dst'] == 'e1') | (variables['dst'] == 'f1') | (variables['dst'] == 'g1') | (variables['dst'] == 'h1'))).ite():
+    # A white pawn that reaches the eighth rank becomes a queen (the move notation has no underpromotion).
+    if ((variables[variables['src']] == 'P') & ((variables['dst'] == 'a8') | (variables['dst'] == 'b8') | (variables['dst'] == 'c8') | (variables['dst'] == 'd8') | (variables['dst'] == 'e8') | (variables['dst'] == 'f8') | (variables['dst'] == 'g8') | (variables['dst'] == 'h8'))).ite():
         variables['tmp3'] = 'Q'
     variables.merge()
     
